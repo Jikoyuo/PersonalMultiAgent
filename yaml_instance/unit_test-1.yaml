@@ -1,0 +1,50 @@
+version: 0.4.0
+vars:
+  # MASUKKAN API KEY OPENROUTER YANG BARU DI SINI
+  OPENROUTER_KEY: "sk-or-v1-xxxxxx"
+  OPENROUTER_URL: "https://openrouter.ai/api/v1"
+
+graph:
+  id: unit_test_io_disk
+  description: Tahap 1 - Memastikan AI bisa menulis file fisik ke folder lokal.
+  is_majority_voting: false
+  start:
+    - Host
+  nodes:
+    - id: Host
+      type: human
+      config:
+        description: 'Ketik "Mulai" untuk mengetes kemampuan tulis file AI.'
+
+    - id: Agent_Penulis
+      type: agent
+      config:
+        provider: openai
+        name: openai/gpt-oss-120b:free
+        role: >
+          Kamu adalah bot DevOps. 
+          TUGAS: Buat script PYTHON MURNI yang:
+          1. Membuat folder bernama 'test_ai_output'.
+          2. Di dalamnya membuat file 'Bukti_Berhasil.txt' berisi teks: "Sistem Tulis File AI Aktif!".
+
+          ATURAN:
+          - HANYA KODE PYTHON MURNI. 
+          - TANPA teks penjelasan (no "Here is the code").
+          - TANPA blok markdown (no ```python).
+          - Gunakan os.makedirs(..., exist_ok=True).
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        params:
+          temperature: 0.1
+          max_tokens: 500
+
+    - id: Executor
+      type: python
+      config:
+        timeout_seconds: 60
+
+  edges:
+    - from: Host
+      to: Agent_Penulis
+    - from: Agent_Penulis
+      to: Executor

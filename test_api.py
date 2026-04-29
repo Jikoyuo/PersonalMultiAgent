@@ -1,15 +1,13 @@
 from openai import OpenAI
 
-OPENROUTER_API_KEY = (
-    "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"
-)
+OPENROUTER_API_KEY = "key"
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,
 )
 
-TEST_MODEL = "openai/gpt-oss-120b:free"
+TEST_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
 
 
 def test_connection():
