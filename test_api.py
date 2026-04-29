@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-OPENROUTER_API_KEY = "tes"
+OPENROUTER_API_KEY = "key"
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",

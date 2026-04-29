@@ -1,0 +1,84 @@
+version: 0.4.0
+graph:
+  id: supreme_agency_v10_final
+  is_majority_voting: false
+  start: [Researcher]
+  nodes:
+    - id: Researcher
+      type: agent
+      config:
+        provider: openai
+        base_url: https://openrouter.ai/api/v1
+        name: nvidia/nemotron-3-super-120b-a12b:free
+        api_key: key
+        role: >
+          TUGAS: Riset konten bisnis (Nama, Headline, 3 Layanan, 3 USP). 
+          PASTIKAN: Output kamu sangat detail agar Developer tahu apa yang harus ditulis.
+
+    - id: UIDesigner
+      type: agent
+      config:
+        provider: openai
+        name: nvidia/nemotron-3-super-120b-a12b:free
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          TUGAS: Tentukan HEX COLOR (Primary, Secondary), Font, dan Style (Modern/Dark/Glass).
+          OUTPUT: Panduan Visual untuk Developer.
+
+    - id: Architect
+      type: agent
+      config:
+        provider: openai
+        name: nvidia/nemotron-3-super-120b-a12b:free
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          Rancang folder 'agency_v10_ultimate'. index.html WAJIB di ROOT.
+
+    - id: Developer
+      type: agent
+      config:
+        provider: openai
+        name: x-ai/grok-code-fast-1
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          Kamu Senior Developer. TUGAS: Buat React App di 'agency_v10_ultimate'.
+          ATURAN MATI (GOLDEN STANDARDS):
+          1. KONTEN: Wajib pakai data dari Researcher (NO PLACEHOLDER).
+          2. DESIGN: Wajib pakai Hex Color & Style dari UIDesigner.
+          3. TECH: index.html di ROOT + Tailwind CDN + import React di setiap .jsx.
+          4. SCRIPTS: package.json WAJIB berisi {"scripts": {"dev": "vite"}}.
+          5. OUTPUT: HANYA RAW PYTHON.
+
+    - id: QA_Reviewer
+      type: agent
+      config:
+        provider: openai
+        name: x-ai/grok-code-fast-1
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          REJECT KODE JIKA: 
+          - Tidak ada script "dev" di package.json.
+          - Isinya cuma placeholder "Welcome to Agency".
+          - Tidak ada import React.
+          HANYA KELUARKAN RAW PYTHON.
+
+    - id: Executor
+      type: python
+      config:
+        timeout_seconds: 300
+
+  edges:
+    - from: Researcher
+      to: UIDesigner
+    - from: UIDesigner
+      to: Architect
+    - from: Architect
+      to: Developer
+    - from: Developer
+      to: QA_Reviewer
+    - from: QA_Reviewer
+      to: Executor
