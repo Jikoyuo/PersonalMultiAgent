@@ -1,7 +1,7 @@
 from openai import OpenAI
 
 OPENROUTER_API_KEY = (
-    "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"
+    "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"
 )
 
 client = OpenAI(
@@ -19,6 +19,7 @@ def test_connection():
     try:
         response = client.chat.completions.create(
             model=TEST_MODEL,
+            max_tokens=1000,
             messages=[
                 {
                     "role": "system",

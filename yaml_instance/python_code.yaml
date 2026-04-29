@@ -1,0 +1,40 @@
+version: 0.0.1
+vars:
+  OPENROUTER_KEY: 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
+  OPENROUTER_URL: https://openrouter.ai/api/v1
+
+graph:
+  id: auto_python_coder
+  description: Manusia memberikan instruksi/ide, Agen AI menulis kode Python, lalu Node Python mengeksekusinya.
+  is_majority_voting: false
+  start:
+    - A
+  nodes:
+    - id: A
+      type: human
+      config:
+        description: 'Masukkan ide aplikasi atau script Python (contoh: "Buatkan game Tic Tac Toe di terminal").'
+
+    - id: B
+      type: agent
+      config:
+        provider: "openai"
+        api_key: "{{ vars.OPENROUTER_KEY }}"
+        base_url: "{{ vars.OPENROUTER_URL }}"
+        name: "qwen/qwen-2.5-coder-32b-instruct:free" # Model diganti ke spesialis coding yang lebih cepat
+        max_tokens: 1000 # <--- WAJIB DITAMBAHKAN AGAR TIDAK ERROR 402/TIMEOUT
+        system_prompt: >
+          Kamu adalah Senior Python Developer. Tugasmu adalah menulis kode Python yang berfungsi penuh berdasarkan permintaan user. 
+          ATURAN KRUSIAL: Berikan HANYA kode Python murni tanpa teks penjelasan, tanpa basa-basi, dan JANGAN gunakan blok markdown (```python ... ```). 
+          Kode harus siap untuk langsung dieksekusi oleh interpreter.
+
+    - id: C
+      type: python
+      config:
+        timeout_seconds: 120
+
+  edges:
+    - from: A
+      to: B
+    - from: B
+      to: C

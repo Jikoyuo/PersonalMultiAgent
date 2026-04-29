@@ -1,5 +1,8 @@
 version: 0.4.0
-vars: {}
+vars:
+  OPENROUTER_KEY: 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
+  OPENROUTER_URL: https://openrouter.ai/api/v1
+
 graph:
   id: test_majority_voting
   description: Majority-voting demo across three agents.
@@ -10,36 +13,44 @@ graph:
     - A3
   end: A3
   nodes:
-  - id: A1
-    type: agent
-    config:
-      provider: openai
-      name: gpt-4o
-      role: You are a helpful assistant. Respond with 'Option A'
-      base_url: ${BASE_URL}
-      api_key: ${API_KEY}
-      params:
-        temperature: 0.1
-        max_tokens: 16
-  - id: A2
-    type: agent
-    config:
-      provider: openai
-      name: gpt-4o
-      role: You are a helpful assistant. Respond with 'Option A'
-      base_url: ${BASE_URL}
-      api_key: ${API_KEY}
-      params:
-        temperature: 0.1
-        max_tokens: 16
-  - id: A3
-    type: agent
-    config:
-      provider: openai
-      name: gpt-4o
-      role: You are a helpful assistant. Respond with 'Option B'
-      base_url: ${BASE_URL}
-      api_key: ${API_KEY}
-      params:
-        temperature: 0.1
-        max_tokens: 16
+    - id: A1
+      type: agent
+      config:
+        provider: openai
+        name: openai/gpt-oss-120b:free
+        role: >
+          Kamu adalah analis intelijen pertahanan dari Amerika Serikat. Fokus utamamu adalah melindungi kepentingan sekutu Barat dan menyalahkan pihak yang mengancam stabilitas global. 
+          ATURAN KRUSIAL: Pikirkan baik-baik siapa yang memicu perang (Amerika atau Iran), namun kamu HANYA BOLEH MEMBALAS DENGAN SATU KATA SAJA: "AMERIKA" atau "IRAN". Jangan ada tanda baca atau kalimat tambahan agar mesin bisa menghitung suaramu!
+        base_url: ${OPENROUTER_URL}
+        api_key: ${OPENROUTER_KEY}
+        params:
+          temperature: 0.1
+          max_tokens: 50
+
+    - id: A2
+      type: agent
+      config:
+        provider: openai
+        name: openai/gpt-oss-120b:free
+        role: >
+          Kamu adalah pengamat geopolitik independen yang pro-kedaulatan Timur Tengah. Fokus utamamu adalah menyoroti dampak buruk intervensi hegemoni Barat.
+          ATURAN KRUSIAL: Pikirkan baik-baik siapa yang memicu perang (Amerika atau Iran), namun kamu HANYA BOLEH MEMBALAS DENGAN SATU KATA SAJA: "AMERIKA" atau "IRAN". Jangan ada tanda baca atau kalimat tambahan agar mesin bisa menghitung suaramu!
+        base_url: ${OPENROUTER_URL}
+        api_key: ${OPENROUTER_KEY}
+        params:
+          temperature: 0.1
+          max_tokens: 50
+
+    - id: A3
+      type: agent
+      config:
+        provider: openai
+        name: openai/gpt-oss-120b:free
+        role: >
+          Kamu adalah dewan penasihat PBB yang sangat netral dan pragmatis. Tugasmu adalah menganalisis rantai sebab-akibat secara objektif tanpa bias wilayah.
+          ATURAN KRUSIAL: Pikirkan baik-baik siapa yang menjadi eskalator utama perang (Amerika atau Iran), namun kamu HANYA BOLEH MEMBALAS DENGAN SATU KATA SAJA: "AMERIKA" atau "IRAN". Jangan ada tanda baca atau kalimat tambahan agar mesin bisa menghitung suaramu!
+        base_url: ${OPENROUTER_URL}
+        api_key: ${OPENROUTER_KEY}
+        params:
+          temperature: 0.1
+          max_tokens: 50
