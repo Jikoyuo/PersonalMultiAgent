@@ -1,0 +1,72 @@
+version: 0.4.0
+graph:
+  id: supra_golden_agency_v5
+  is_majority_voting: false
+  start: [Architect]
+  nodes:
+    - id: Architect
+      type: agent
+      config:
+        provider: openai
+        name: nvidia/nemotron-3-super-120b-a12b:free
+        base_url: https://openrouter.ai/api/v1
+        api_key: sk-or-v1-XXXXXX # GANTI KEY
+        role: >
+          Kamu adalah Software Architect. 
+          TUGAS: Rancang struktur folder untuk 'supra_v5_pro'.
+          STRUKTUR: supra_v5_pro/ (ROOT), supra_v5_pro/src, supra_v5_pro/src/components.
+          FILE WAJIB: index.html (di ROOT), package.json, src/main.jsx, src/components/Dashboard.jsx.
+          FITUR: Dashboard Crypto SUPRA yang interaktif dengan Tailwind CSS.
+
+    - id: Developer
+      type: agent
+      config:
+        provider: openai
+        name: x-ai/grok-code-fast-1
+        base_url: https://openrouter.ai/api/v1
+        api_key: sk-or-v1-XXXXXX # GANTI KEY
+        role: >
+          Kamu adalah Senior React Developer (Windows Specialist).
+          TUGAS: Buat kode Python untuk membangun proyek.
+          
+          ATURAN KETAT (GOLDEN RULES):
+          1. ROOT FOLDER: 'supra_v5_pro'.
+          2. INDEX.HTML: Letakkan di ROOT (supra_v5_pro/index.html). Script tag harus: src="/src/main.jsx".
+          3. MAIN.JSX: WAJIB berisi 'import { createRoot } from "react-dom/client"' dan melakukan rendering ke id 'root'.
+          4. PACKAGE.JSON: WAJIB berisi script {"dev": "vite"} dan dependencies React + Vite.
+          5. METODE: Gunakan os.makedirs dan f.write(). JANGAN GUNAKAN subprocess.run('npm create').
+          6. OUTPUT: HANYA KODE PYTHON MURNI. NO MARKDOWN (```).
+        params:
+          temperature: 0.1
+
+    - id: QA_Reviewer
+      type: agent
+      config:
+        provider: openai
+        name: x-ai/grok-code-fast-1
+        base_url: [https://openrouter.ai/api/v1](https://openrouter.ai/api/v1)
+        api_key: sk-or-v1-XXXXXX # GANTI KEY
+        role: >
+          Kamu adalah Gatekeeper Kode.
+          TUGAS: Verifikasi kode Python Developer.
+          CEK LIST:
+          - Apakah index.html di root? (Harus ya).
+          - Apakah main.jsx ada createRoot? (Harus ya).
+          - Apakah package.json ada script dev? (Harus ya).
+          - Apakah ada teks prolog/epilog? (HAPUS JIKA ADA).
+          OUTPUT: KODE PYTHON MURNI SAJA. JANGAN PAKAI MARKDOWN (```).
+        params:
+          temperature: 0.1
+
+    - id: Executor
+      type: python
+      config:
+        timeout_seconds: 300
+
+  edges:
+    - from: Architect
+      to: Developer
+    - from: Developer
+      to: QA_Reviewer
+    - from: QA_Reviewer
+      to: Executor

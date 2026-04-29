@@ -7,7 +7,7 @@ client = OpenAI(
     api_key=OPENROUTER_API_KEY,
 )
 
-TEST_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
+TEST_MODEL = "x-ai/grok-code-fast-1"
 
 
 def test_connection():

@@ -16,7 +16,7 @@ graph:
         provider: openai
         name: openai/gpt-oss-120b:free
         base_url: https://openrouter.ai/api/v1
-        api_key: [ENCRYPTION_KEY]
+        api_key: key
         role: >
           Kamu adalah Senior Dev. Buat script PYTHON MURNI untuk:
           1. Folder 'project_react'.

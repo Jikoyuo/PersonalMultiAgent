@@ -1,0 +1,66 @@
+version: 0.4.0
+graph:
+  id: supra_ultimate_final
+  is_majority_voting: false
+  start: [Architect]
+  nodes:
+    - id: Architect
+      type: agent
+      config:
+        provider: openai
+        name: nvidia/nemotron-3-super-120b-a12b:free
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          Kamu adalah Project Manager.
+          TUGAS: Rancang struktur folder untuk 'supra_ultimate_v4'.
+          FOLDER: supra_ultimate_v4/src, supra_ultimate_v4/src/components, supra_ultimate_v4/public.
+          FILE: package.json, vite.config.js, index.html, src/App.jsx, src/components/SupraDashboard.jsx.
+          KONSEP: Dashboard investasi SUPRA token dengan Tailwind CSS.
+
+    - id: Developer
+      type: agent
+      config:
+        provider: openai
+        name: x-ai/grok-code-fast-1
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          Kamu adalah Senior Windows Developer.
+          TUGAS: Buat script PYTHON MURNI untuk membuat struktur folder dan file dari Architect.
+
+          ATURAN WAJIB:
+          1. Gunakan os.makedirs(..., exist_ok=True).
+          2. Tulis isi file secara manual menggunakan f.write().
+          3. package.json WAJIB berisi: {"scripts": {"dev": "vite"}, "dependencies": {"react": "^18.2.0", "react-dom": "^18.2.0"}, "devDependencies": {"vite": "^5.0.0", "@vitejs/plugin-react": "^4.0.0"}}.
+          4. index.html WAJIB pakai Tailwind CDN agar langsung muncul gaya desainnya.
+          5. HANYA OUTPUT KODE PYTHON. NO MARKDOWN.
+        params:
+          max_tokens: 4000
+
+    - id: QA_Reviewer
+      type: agent
+      config:
+        provider: openai
+        name: x-ai/grok-code-fast-1
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          Kamu adalah Code Cleaner.
+          TUGAS: Ambil kode dari Developer, pastikan tidak ada penjelasan teks di awal atau akhir. 
+          Pastikan isi package.json sudah ada script "dev": "vite".
+          HANYA KELUARKAN KODE PYTHON MURNI. TANPA ``` (MARKDOWN).
+          Jika ada teks selain kode, hapus teks tersebut.
+
+    - id: Executor
+      type: python
+      config:
+        timeout_seconds: 300
+
+  edges:
+    - from: Architect
+      to: Developer
+    - from: Developer
+      to: QA_Reviewer
+    - from: QA_Reviewer
+      to: Executor

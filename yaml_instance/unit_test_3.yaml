@@ -1,0 +1,52 @@
+version: 0.4.0
+graph:
+  id: crypto_agency_stage_3
+  is_majority_voting: false
+  start:
+    - Architect # Langsung mulai dari Architect biar gak macet di Host
+  nodes:
+    - id: Architect
+      type: agent
+      config:
+        provider: openai
+        name: nvidia/nemotron-3-super-120b-a12b:free
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          Kamu adalah Software Architect. 
+          TUGAS: Buat rencana struktur folder dan file untuk "Supra Crypto Dashboard" sederhana.
+          OUTPUT: Berikan daftar file (App.jsx, Header.jsx, Card.jsx) dan penjelasan singkat tema Tailwind (Dark Mode).
+          Gunakan bahasa yang santai tapi profesional.
+        params:
+          temperature: 0.3
+
+    - id: Developer
+      type: agent
+      config:
+        provider: openai
+        name: openai/gpt-oss-120b:free
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
+        role: >
+          Kamu adalah Senior Frontend Developer. 
+          TUGAS: Baca rencana dari Architect, lalu buat script PYTHON MURNI untuk membangun proyek tersebut.
+
+          ATURAN KETAT:
+          1. Gunakan folder utama 'supra_agency_project'.
+          2. Buat file: package.json, index.html (Tailwind CDN), src/App.jsx, dan src/components/CryptoCard.jsx.
+          3. HANYA KELUARKAN KODE PYTHON MURNI. TANPA MARKDOWN (```), TANPA BASA-BASI.
+          4. Gunakan raw string r'''...''' untuk isi file agar tidak error.
+        params:
+          temperature: 0.1
+          max_tokens: 3000
+
+    - id: Executor
+      type: python
+      config:
+        timeout_seconds: 180 # Kasih waktu lebih lama karena filenya banyak
+
+  edges:
+    - from: Architect
+      to: Developer
+    - from: Developer
+      to: Executor
