@@ -33,7 +33,7 @@ graph:
           - TANPA blok markdown (no ```python).
           - Gunakan os.makedirs(..., exist_ok=True).
         base_url: https://openrouter.ai/api/v1
-        api_key: [ENCRYPTION_KEY]
+        api_key: key
         params:
           temperature: 0.1
           max_tokens: 500

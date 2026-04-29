@@ -1,0 +1,38 @@
+version: 0.4.0
+graph:
+  id: final_boss_test
+  is_majority_voting: false
+  start:
+    - Agent_Penulis
+  nodes:
+    - id: Host
+      type: human
+      config:
+        description: 'Ketik "GAS" untuk buat project React utuh.'
+
+    - id: Agent_Penulis
+      type: agent
+      config:
+        provider: openai
+        name: openai/gpt-oss-120b:free
+        base_url: https://openrouter.ai/api/v1
+        api_key: [ENCRYPTION_KEY]
+        role: >
+          Kamu adalah Senior Dev. Buat script PYTHON MURNI untuk:
+          1. Folder 'project_react'.
+          2. Di dalamnya buat 'package.json' dan 'src/App.jsx' (isi kode react).
+          ATURAN: HANYA KODE PYTHON, NO MARKDOWN, NO BASA-BASI. Gunakan r'''...''' agar aman.
+        params:
+          temperature: 0.1
+          max_tokens: 2000
+
+    - id: Executor
+      type: python
+      config:
+        timeout_seconds: 120
+
+  edges:
+    - from: Host
+      to: Agent_Penulis
+    - from: Agent_Penulis
+      to: Executor
