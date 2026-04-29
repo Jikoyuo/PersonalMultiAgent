@@ -192,6 +192,9 @@
         <button v-else @click="openConfigureGraphModal" class="glass-button">
           <span>{{ $t('workflow_view.configure_graph') }}</span>
         </button>
+        <button @click="openYamlEditorModal" class="glass-button">
+          <span>{{ $t('workflow_view.edit_raw_yaml') }}</span>
+        </button>
         <RichTooltip v-if="shouldShowTooltip" :content="helpContent.contextMenu.launch" placement="bottom">
           <button @click="goToLaunch" class="launch-button-primary">
             <span>{{ $t('workflow_view.launch') }}</span>
@@ -320,6 +323,38 @@
       </div>
     </div>
   </div>
+  <!-- Edit Raw YAML Modal -->
+  <div v-if="showYamlEditorModal" class="modal-overlay" @click.self="closeYamlEditorModal">
+    <div class="modal-content" style="width: 80%; max-width: 800px; height: 80vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ $t('workflow_view.edit_raw_yaml') }}</h3>
+        <button @click="closeYamlEditorModal" class="close-button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+        <div v-if="yamlEditorError" class="yaml-error" style="margin-bottom: 10px;">
+          {{ yamlEditorError }}
+        </div>
+        <div v-if="yamlEditorSuccess" class="yaml-success" style="margin-bottom: 10px; color: #10b981; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 12px; border-radius: 8px;">
+          {{ yamlEditorSuccess }}
+        </div>
+        <textarea
+          v-model="editingYamlText"
+          class="yaml-textarea"
+          :class="{ 'yaml-error-border': yamlEditorError }"
+          style="flex: 1; resize: none; width: 100%; box-sizing: border-box; font-family: monospace;"
+        ></textarea>
+      </div>
+      <div class="modal-footer">
+        <button @click="closeYamlEditorModal" class="cancel-button">{{ $t('common.cancel') }}</button>
+        <button @click="validateEditingYaml" class="submit-button" style="background: #3b82f6;">{{ $t('workflow_view.validate_yaml') }}</button>
+        <button @click="saveEditingYaml" class="submit-button">{{ $t('common.save') }}</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -338,7 +373,7 @@ import StartNode from '../components/StartNode.vue'
 import FormGenerator from '../components/FormGenerator.vue'
 import RichTooltip from '../components/RichTooltip.vue'
 import yaml from 'js-yaml'
-import { fetchYaml, fetchVueGraph, postVuegraphs, updateYaml, postYamlNameChange, postYamlCopy } from '../utils/apiFunctions'
+import { fetchYaml, fetchVueGraph, postVuegraphs, updateYaml, postYamlNameChange, postYamlCopy, validateYaml } from '../utils/apiFunctions'
 import { helpContent } from '../utils/helpContent.js'
 import { configStore } from '../utils/configStore.js'
 
@@ -374,6 +409,73 @@ const yamlParseError = ref(null)
 
 const showDynamicFormGenerator = ref(false)
 const showMenu = ref(false)
+
+// YAML Editor Modal refs and methods
+const showYamlEditorModal = ref(false)
+const editingYamlText = ref('')
+const yamlEditorError = ref(null)
+const yamlEditorSuccess = ref(null)
+
+const openYamlEditorModal = () => {
+  editingYamlText.value = yamlTextString.value
+  yamlEditorError.value = null
+  yamlEditorSuccess.value = null
+  showYamlEditorModal.value = true
+}
+
+const closeYamlEditorModal = () => {
+  showYamlEditorModal.value = false
+  yamlEditorError.value = null
+  yamlEditorSuccess.value = null
+}
+
+const validateEditingYaml = async () => {
+  yamlEditorError.value = null
+  yamlEditorSuccess.value = null
+  
+  if (!editingYamlText.value.trim()) {
+    yamlEditorError.value = 'YAML content cannot be empty'
+    return false
+  }
+  
+  try {
+    // Local pre-validation
+    yaml.load(editingYamlText.value)
+    
+    // Backend validation
+    const result = await validateYaml(currentWorkflowName.value, editingYamlText.value)
+    if (!result?.success) {
+      yamlEditorError.value = result?.detail?.message || result?.message || 'Validation failed'
+      return false
+    }
+    
+    yamlEditorSuccess.value = t('workflow_view.yaml_valid')
+    return true
+  } catch (error) {
+    yamlEditorError.value = error.message
+    return false
+  }
+}
+
+const saveEditingYaml = async () => {
+  const isValid = await validateEditingYaml()
+  if (!isValid) {
+    return
+  }
+  
+  try {
+    const result = await updateYaml(currentWorkflowName.value, editingYamlText.value)
+    if (!result?.success) {
+      yamlEditorError.value = result?.detail?.message || result?.message || 'Failed to save YAML'
+      return
+    }
+    
+    closeYamlEditorModal()
+    await initializeWorkflow(currentWorkflowName.value)
+  } catch (error) {
+    yamlEditorError.value = error.message
+  }
+}
 const formGeneratorBreadcrumbs = ref([])
 const formGeneratorRecursive = ref(false)
 const formGeneratorInitialYaml = ref(null)

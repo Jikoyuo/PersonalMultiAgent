@@ -1,7 +1,7 @@
 from openai import OpenAI
 
 OPENROUTER_API_KEY = (
-    "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"
+    "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"
 )
 
 client = OpenAI(

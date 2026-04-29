@@ -65,6 +65,45 @@ export async function postYaml(filename, content) {
   }
 }
 
+// Validate a YAML file
+export async function validateYaml(filename, content) {
+  try {
+    const fullFilename = addYamlSuffix(filename)
+    const response = await fetch(apiUrl('/api/workflows/validate'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        filename: fullFilename,
+        content: content
+      })
+    })
+
+    const data = await response.json().catch(() => ({}))
+
+    if (response.ok) {
+      return {
+        success: true,
+        message: data?.message || 'YAML is valid!'
+      }
+    }
+
+    return {
+      success: false,
+      detail: data?.detail,
+      message: data?.message || 'Validation failed',
+      status: response.status
+    }
+  } catch (error) {
+    console.error('Error validating YAML file:', error)
+    return {
+      success: false,
+      message: 'API error'
+    }
+  }
+}
+
 export async function updateYaml(filename, content) {
   try {
     const yamlFilename = addYamlSuffix(filename)

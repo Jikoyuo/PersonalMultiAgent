@@ -88,7 +88,10 @@
     "manage_memories": "Manage Memories",
     "create_edge": "Create Edge",
     "enter_new_name": "Enter new workflow name",
-    "workflow_name": "Workflow Name"
+    "workflow_name": "Workflow Name",
+    "edit_raw_yaml": "Edit Raw YAML",
+    "validate_yaml": "Validate YAML",
+    "yaml_valid": "YAML is valid!"
   },
   "batch_run": {
     "title": "Labaratory",

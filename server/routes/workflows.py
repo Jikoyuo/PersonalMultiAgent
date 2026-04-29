@@ -6,6 +6,7 @@ from server.models import (
     WorkflowRenameRequest,
     WorkflowUpdateContentRequest,
     WorkflowUploadContentRequest,
+    WorkflowValidateContentRequest,
 )
 from server.services.workflow_storage import (
     copy_workflow,
@@ -225,6 +226,22 @@ async def upload_workflow_content(request: WorkflowUploadContentRequest):
         action="upload",
         success_message="Workflow {filename} created successfully from content",
     )
+
+
+@router.post("/api/workflows/validate")
+async def validate_workflow_yaml(request: WorkflowValidateContentRequest):
+    try:
+        # validate_workflow_content defined in workflow_storage.py checks for YAML errors
+        validate_workflow_content(request.filename, request.content)
+        return {
+            "status": "success",
+            "message": "YAML is valid",
+        }
+    except Exception as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={"message": str(exc)},
+        )
 
 
 @router.put("/api/workflows/{filename}/update")

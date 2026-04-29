@@ -27,6 +27,11 @@ class WorkflowUploadContentRequest(BaseModel):
     content: str
 
 
+class WorkflowValidateContentRequest(BaseModel):
+    filename: str
+    content: str
+
+
 class WorkflowUpdateContentRequest(BaseModel):
     content: str
 
