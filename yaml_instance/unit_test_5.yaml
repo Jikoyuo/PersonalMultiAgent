@@ -10,7 +10,7 @@ graph:
         provider: openai
         name: nvidia/nemotron-3-super-120b-a12b:free
         base_url: https://openrouter.ai/api/v1
-        api_key: sk-or-v1-XXXXXX # GANTI KEY
+        api_key: key
         role: >
           Kamu adalah Software Architect. 
           TUGAS: Rancang struktur folder untuk 'supra_v5_pro'.
@@ -24,11 +24,11 @@ graph:
         provider: openai
         name: x-ai/grok-code-fast-1
         base_url: https://openrouter.ai/api/v1
-        api_key: sk-or-v1-XXXXXX # GANTI KEY
+        api_key: key
         role: >
           Kamu adalah Senior React Developer (Windows Specialist).
           TUGAS: Buat kode Python untuk membangun proyek.
-          
+
           ATURAN KETAT (GOLDEN RULES):
           1. ROOT FOLDER: 'supra_v5_pro'.
           2. INDEX.HTML: Letakkan di ROOT (supra_v5_pro/index.html). Script tag harus: src="/src/main.jsx".
@@ -44,8 +44,8 @@ graph:
       config:
         provider: openai
         name: x-ai/grok-code-fast-1
-        base_url: [https://openrouter.ai/api/v1](https://openrouter.ai/api/v1)
-        api_key: sk-or-v1-XXXXXX # GANTI KEY
+        base_url: https://openrouter.ai/api/v1
+        api_key: key
         role: >
           Kamu adalah Gatekeeper Kode.
           TUGAS: Verifikasi kode Python Developer.
